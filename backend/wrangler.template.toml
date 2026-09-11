@@ -1,0 +1,33 @@
+# Copy this to wrangler.toml and fill in the placeholders, or just run
+# ../setup.sh which creates the resources and writes the ids for you.
+name = "distro-indicators"
+main = "src/index.ts"
+compatibility_date = "2026-09-01"
+
+[triggers]
+crons = ["*/15 * * * *"]
+
+[vars]
+SNAPSHOT_KEY = "snapshot.json"
+
+# Custom domain so the account-derived workers.dev hostname (which contains an
+# email prefix) is never shipped in the plugin. Change to your own, or delete
+# this block to use the free <name>.<account>.workers.dev URL.
+[[routes]]
+pattern = "api.example.com"
+custom_domain = true
+
+[[d1_databases]]
+binding = "DB"
+database_name = "distro-indicators"
+database_id = "REPLACE_WITH_YOUR_D1_ID"
+migrations_dir = "migrations"
+
+[[kv_namespaces]]
+binding = "SNAPSHOTS"
+id = "REPLACE_WITH_YOUR_KV_ID"
+
+# Secrets are never in this file. Set them with:
+#   wrangler secret put DISCORD_CLIENT_ID
+#   wrangler secret put DISCORD_CLIENT_SECRET
+#   wrangler secret put STATE_SECRET   # any long random string
