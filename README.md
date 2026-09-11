@@ -61,10 +61,9 @@ open an issue, ill take a look at it, and maybe, just maybe, fix it.
 
 ## credits
 
-this is a fork of vencords built-in **PlatformIndicators**, most of the rendering logic is theirs. full credit to the people who actually put in some effort into making it rather than bullying claude for 6 hours: **Vendicated**, **Nuckyz**, **kemo** and **sunnie**.
+this is a fork of vencords built-in [**PlatformIndicators**](https://github.com/Vendicated/Vencord/tree/main/src/plugins/platformIndicators), most of the rendering logic is theirs. full credit to the people who actually put in some effort into making it rather than bullying claude for 6 hours: [**Vendicated**](https://github.com/Vendicated), [**Nuckyz**](https://github.com/Nuckyz), **kemo** and [**sunnie**](https://github.com/sunnniee).
 
 - icons from [simple-icons](https://github.com/simple-icons/simple-icons) (CC0) and wikimedia commons
-- nyarch logo traced from [nyarch linux](https://nyarchlinux.moe)
 
 <div align="center">
 
