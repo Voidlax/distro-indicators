@@ -1,45 +1,59 @@
 # DistroIndicators
 
-shows what OS someone runs instead of the boring desktop icon. fork of the built-in
-PlatformIndicators.
+ever wanted to flex that you use arch (btw)? that you get off on recompiling your kernel every morning on
+gentoo? or just want a feature that should be native to discord yet isn't because discord only cares about your wallet and how many nitro exclusive features they can shove down your throat?
+introducing **DistroIndicators**!
+
+forked from the lovely PlatformIndicators plugin, and wired into my own backend, it saves your operating system to a database then serves you a custom OS badge that shows up for everyone!
+
+below is a genuine example of its capabilities, from two satisfied users:
 
 ![example](docs/example.png)
+<sub>never use arch it fucks up your sanity</sub>
 
-opt-in, so an icon only shows for people who picked one. u set urs in the plugin
-settings and other people with the plugin see it, in the member list, on profiles and
-next to messages. everyone else keeps their normal platform icon.
 
-33 operating systems with their real logos, most distros plus windows and macos.
-theres also a Tux fallback for generic linux.
-
-heads up: the list of who picked what is **public**, since thats how every client
-reads it without a lookup per person. the plugin tells u before u set anything, and
-picking "none" deletes ur entry.
-
-turn off the built-in PlatformIndicators when u use this or theyll both show.
 
 ## installing
 
-its a userplugin, so u need vencord (or equicord) built from source. follow the
+its a userplugin, so you need vencord (or equicord) built from source. follow the
 [custom plugin guide](https://docs.vencord.dev/installing/custom-plugins/), then drop
 these files into `src/userplugins/distroIndicators/` and build. enable it, turn off
-the built-in PlatformIndicators, and pick ur OS in the settings.
+the built-in PlatformIndicators, and pick your OS in the settings.
 
 if it cant reach the backend, add `api.5ylens.lol` to vencords CSP allowlist through
-the `customCspRules` setting. (once its in equicord this is handled for u.)
+the `customCspRules` setting.
+
+## faq
+
+**where is windows 8?**
+No.
+
+**this looks like vibecoded ai slop**
+it is. i would lowkey sacrifice my firstborn to Anthropic. claude my bbg <3
+
+**my distro isnt in the list**
+if by any chance your ancient ass distro from 2011 themed around Hannah Montana isn't in the list, you can always create an issue, and i'll take a look at it.
+
+**why do i have to pick my OS manually? can't it detect it by itself?**
+unfortunately no. discord can only know you're on desktop, web, phone, vr or console. there's nothing that we can read internally that detects the actual operating system. blame discord for that, not me. so please DON'T larp.
+
+**im a dual boot cuck. what about me?**
+at the moment, only one OS can be chosen at a time. i'm planning a feature where you can store two OSes and toggle between them on the go, but for now, just pick the OS you use the most.
+
+**why is this a thing?**
+i was bored.
+
+**i found a bug**
+open an issue, ill take a look at it, and maybe, just maybe, fix it.
 
 ---
 
-theres also a backend (a cloudflare worker on the free tier), but u dont need to touch
-it, the plugin talks to the public one. its only here if u wanna run ur own, see
-[`backend/`](backend/).
 
 ## credits
 
 this is a fork of vencords built-in **PlatformIndicators**, most of the rendering
-logic is theirs. full credit to the people who wrote it: **Vendicated**, **Nuckyz**,
-**kemo** and **sunnie**. i just swapped the platform glyph for a distro logo and
-bolted a backend on.
+logic is theirs. full credit to the people who actually put in some effort into making it rather than bullying claude for 6 hours: **Vendicated**, **Nuckyz**,
+**kemo** and **sunnie**.
 
 - icons from [simple-icons](https://github.com/simple-icons/simple-icons) (CC0) and
   wikimedia commons
