@@ -1,5 +1,3 @@
-// keep in sync with the plugin's osList.ts
-
 export const OS_IDS = [
     "alpine",
     "arch",

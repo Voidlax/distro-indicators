@@ -4,36 +4,15 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-/**
- * The OS registry. Must stay in step with the worker's enum.ts -- the server
- * validates against its own copy, so an id here it does not know is rejected
- * on save.
- *
- * Marks are the projects' OFFICIAL logos, almost all from simple-icons (CC0),
- * which publishes them as a single 24x24 path with even-odd fill. A few come
- * from Wikimedia Commons where simple-icons has no entry; those carry their own
- * viewBox. Single-path is what makes them work here -- they render as mono
- * silhouettes tinted by status colour, exactly like Discord's own platform
- * glyphs, so they sit natively next to everyone else's.
- *
- * Every path is a real logo, and every one was rendered at 16px against
- * Discord's background before being added. That check is not optional: it
- * caught a hand-written Tux that came out as an unrecognisable blob, a
- * "SteamOS" mark that was actually the Steam Deck logo, and Kali's dragon
- * disappearing into hairlines at indicator size. An OS with no usable mark is
- * simply not offered -- a missing icon is honest, a wrong or invisible one is
- * not. Never hand-draw or generate one to fill a gap.
- */
 export interface OsEntry {
-    /** Not offered in the picker; reachable only by the Arch easter egg. */
     hidden?: boolean;
-    /** For traced art that comes out y-flipped. */
+
     transform?: string;
     id: string;
     label: string;
     group: "Linux" | "BSD" | "macOS" | "Windows";
     path: string;
-    /** Only when the source art is not on a 24x24 grid. */
+
     viewBox?: string;
 }
 
@@ -251,7 +230,6 @@ export const OS_LIST: readonly OsEntry[] = [
 
 const BY_ID = new Map(OS_LIST.map(entry => [entry.id, entry]));
 
-/** Everything a user may actually pick -- hidden entries are easter eggs. */
 export const PICKABLE = OS_LIST.filter(entry => !entry.hidden);
 
 export function getOs(id: string | undefined): OsEntry | undefined {

@@ -15,8 +15,6 @@ let lastFetch = 0;
 
 const REFRESH_MS = 30 * 60 * 1000;
 
-// presence stores don't know about this data, so components need a signal of
-// their own or a snapshot that lands after render never gets drawn
 const listeners = new Set<() => void>();
 
 export function subscribe(listener: () => void): () => void {

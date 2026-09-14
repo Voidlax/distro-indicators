@@ -16,7 +16,6 @@ import { getDistroFor, refresh, setLocalDistro, subscribe } from "./store";
 
 const logger = new Logger("DistroIndicators");
 
-// Discord's in-client OAuth modal, so no browser redirect
 async function authorize(): Promise<boolean> {
     const { state, clientId } = await startAuth();
 
@@ -55,7 +54,6 @@ export function OsPicker() {
 
     const userId = UserStore.getCurrentUser()?.id;
 
-    // read from the store, not local state, or reopening shows "Not set"
     const [current, setCurrent] = React.useState<string>(() => (userId && getDistroFor(userId)) || "");
 
     React.useEffect(() => subscribe(() => {
@@ -70,7 +68,6 @@ export function OsPicker() {
     ], []);
 
     async function choose(value: string) {
-        // don't let a stray select event for a value we already hold delete the entry
         if (value === current) return;
         if (value === "" && !current) return;
 

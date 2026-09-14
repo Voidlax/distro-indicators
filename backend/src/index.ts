@@ -15,7 +15,6 @@ export interface Env {
 const TOKEN_TTL_MS = 90 * 24 * 60 * 60 * 1000;
 const STATE_TTL_MS = 5 * 60 * 1000;
 
-// discord's renderer sends an origin we can't verify, so the bearer token is the boundary
 const CORS = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "GET, HEAD, PUT, DELETE, POST, OPTIONS",
@@ -36,7 +35,6 @@ function json(body: unknown, init: ResponseInit = {}): Response {
 }
 
 async function readJsonObject(request: Request): Promise<Record<string, unknown> | null> {
-    // cap before parsing; valid bodies here are tiny
     const declared = Number(request.headers.get("Content-Length") ?? 0);
     if (declared > 2048) return null;
 
@@ -64,7 +62,7 @@ function randomToken(): string {
 
 function b64url(bytes: ArrayBuffer): string {
     return btoa(String.fromCharCode(...new Uint8Array(bytes)))
-        .replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+        .replace(/\+/g, "-").replace(/\
 }
 
 async function hmac(env: Env, data: string): Promise<string> {
@@ -75,7 +73,6 @@ async function hmac(env: Env, data: string): Promise<string> {
     return b64url(await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(data)));
 }
 
-// signed state keeps the unauthenticated endpoint out of the database
 async function makeState(env: Env): Promise<string> {
     const payload = `${Date.now() + STATE_TTL_MS}.${randomToken()}`;
     return `${payload}.${await hmac(env, payload)}`;
@@ -91,7 +88,6 @@ async function verifyState(env: Env, state: string): Promise<boolean> {
     const expected = await hmac(env, payload);
     if (sig.length !== expected.length) return false;
 
-    // compare without leaking a matching prefix
     let diff = 0;
     for (let i = 0; i < sig.length; i++) diff |= sig.charCodeAt(i) ^ expected.charCodeAt(i);
     if (diff !== 0) return false;
@@ -129,7 +125,6 @@ async function handleAuthCallback(request: Request, env: Env, redirectUri: strin
         return json({ error: "code and state required" }, { status: 400 });
     }
 
-    // state isn't single-use, but discord authorization codes are
     if (!await verifyState(env, state)) {
         return json({ error: "invalid or expired state" }, { status: 400 });
     }
@@ -195,7 +190,6 @@ async function handleSetDistro(request: Request, env: Env, ctx: ExecutionContext
         env.DB.prepare("UPDATE publish_state SET revision = revision + 1 WHERE id = 1"),
     ]);
 
-    // publish off the response path; cron catches failures
     ctx.waitUntil(publishSnapshot(env));
 
     return json({ ok: true, distro: body.distro });
@@ -217,7 +211,6 @@ async function handleDeleteDistro(request: Request, env: Env, ctx: ExecutionCont
 }
 
 async function handleSnapshot(env: Env, ctx: ExecutionContext): Promise<Response> {
-    // don't let query strings create attacker-controlled cache keys
     const cache = caches.default;
     const cacheKey = new Request(SNAPSHOT_CACHE_KEY);
 
@@ -262,7 +255,6 @@ export default {
 
         const redirectUri = `${url.origin}/auth/callback`;
 
-        // workers drops the body for HEAD responses
         const method = request.method === "HEAD" ? "GET" : request.method;
         const route = `${method} ${url.pathname}`;
 

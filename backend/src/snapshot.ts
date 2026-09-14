@@ -1,7 +1,6 @@
 import { SNAPSHOT_CACHE_KEY } from "./cache";
 import type { Env } from "./index";
 
-// capture the revision before rows so a mid-build write stays pending
 export async function publishSnapshot(env: Env): Promise<void> {
     const state = await env.DB
         .prepare("SELECT revision, published_revision FROM publish_state WHERE id = 1")
@@ -27,7 +26,6 @@ export async function publishSnapshot(env: Env): Promise<void> {
 
     await env.SNAPSHOTS.put(env.SNAPSHOT_KEY, body);
 
-    // don't let a slower build roll back a newer published revision
     await env.DB
         .prepare(`UPDATE publish_state
                      SET published_revision = ?, published_at = ?, row_count = ?
@@ -35,7 +33,6 @@ export async function publishSnapshot(env: Env): Promise<void> {
         .bind(buildingRevision, Date.now(), results.length, buildingRevision)
         .run();
 
-    // this must match handleSnapshot's fixed cache key
     await caches.default.delete(new Request(SNAPSHOT_CACHE_KEY));
 }
 

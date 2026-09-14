@@ -92,7 +92,6 @@ const Icons = {
 
 const iconCache = new Map<string, ReturnType<typeof Icon>>();
 
-// rolled once per session, reload rerolls
 const ARCH_EGG = (() => {
     const roll = Math.random();
     if (roll < 0.05) return { id: "nyarch", label: "Nyarch Linux" };
@@ -100,7 +99,6 @@ const ARCH_EGG = (() => {
     return null;
 })();
 
-// snapshot usually lands after the list has rendered, so force a redraw
 function useSnapshot(): void {
     const forceUpdate = useForceUpdater();
     React.useEffect(() => subscribe(forceUpdate), [forceUpdate]);
@@ -114,7 +112,7 @@ function distroIconFor(userId: string) {
     const id = egg?.id ?? stored;
 
     const os = getOs(id);
-    // known to the server but no mark in this build -> fall back to platform glyph
+
     if (!os) return undefined;
 
     let icon = iconCache.get(id);
@@ -134,7 +132,7 @@ const settings = definePluginSettings({
             return [key, {
                 type: OptionType.BOOLEAN,
                 description: `show icons ${value.description}`,
-                // onChange doesn't say which setting changed, so just require a restart
+
                 restartNeeded: true,
                 default: true
             }];
@@ -179,7 +177,6 @@ function getPlatformTooltip(platform: DiscordPlatform): string {
 
 const NUDGE_KEY = "distro-indicators-nudged";
 
-// one-time prompt, or a fresh install just looks broken
 async function maybeNudge() {
     try {
         if (await DataStore.get(NUDGE_KEY)) return;
@@ -194,7 +191,6 @@ async function maybeNudge() {
         await DataStore.set(NUDGE_KEY, true);
         showWelcomeModal();
     } catch {
-        // best effort
     }
 }
 
@@ -225,9 +221,6 @@ function getOwnStatus() {
         return acc;
     }, {} as ClientStatusMap);
 
-    // Vesktop's own session often reports client "unknown", which the filter
-    // above drops, leaving an empty map and no icon on your own messages. If we
-    // have a distro to show, guarantee a desktop entry so it renders.
     const me = AuthenticationStore.getId();
     if (me && getDistroFor(me) && !map.desktop && !map.web) {
         const own = Object.values(sortedSessions).find(s => s.status);
@@ -268,9 +261,6 @@ function getBadges({ userId }: BadgeUserArgs): ProfileBadge[] {
         ),
     }));
 }
-
-// desktop and web are the same machine (Vesktop reports as web), so collapse
-// them to one icon; mobile is a real second device
 
 function collapseDistroPlatforms(statusMap: ClientStatusMap, userId?: string): ClientStatusMap {
     if (!userId || !getDistroFor(userId)) return statusMap;
@@ -318,9 +308,6 @@ function renderPlatformIndicators(user: User, small: boolean) {
 }
 
 function CurrentUserPlatformIndicators({ small }: { small: boolean; }) {
-    // subscribe to both the sessions store and our snapshot, then compute fresh
-    // on each render -- getOwnStatus's distro-backed desktop entry depends on
-    // the snapshot, which useStateFromStores([SessionsStore]) would never see
     useSnapshot();
     useStateFromStores([SessionsStore], () => SessionsStore.getSessions());
     const statusMap = getOwnStatus();
@@ -339,7 +326,7 @@ export default definePlugin({
     tags: ["Appearance"],
     authors: [
         { name: "Voidlax", id: 323422632408121346n },
-        // original PlatformIndicators authors this is forked from
+
         { name: "Vendicated", id: 343383572805058560n },
         { name: "Nuckyz", id: 235834946571337729n },
         { name: "kemo", id: 715746190813298788n },
@@ -370,12 +357,10 @@ export default definePlugin({
             predicate: () => settings.store.colorMobileIndicator,
             replacement: [
                 {
-                    // Return the STATUS_ONLINE_MOBILE mask if the user is on mobile, no matter the status
                     match: /\.STATUS_TYPING;switch(?=.+?(if\(\i\)return \i\.\i\.Masks\.STATUS_ONLINE_MOBILE))/,
                     replace: ".STATUS_TYPING;$1;switch"
                 },
                 {
-                    // Return the STATUS_ONLINE_MOBILE mask if the user is on mobile, no matter the status
                     match: /switch\(\i\)\{case \i\.\i\.ONLINE:(if\(\i\)return\{[^}]+\})/,
                     replace: "$1;$&"
                 }
@@ -386,17 +371,14 @@ export default definePlugin({
             predicate: () => settings.store.colorMobileIndicator,
             replacement: [
                 {
-                    // Return the AVATAR_STATUS_MOBILE size mask if the user is on mobile, no matter the status
                     match: /\i===\i\.\i\.ONLINE&&(?=.{0,70}\.AVATAR_STATUS_MOBILE_16;)/,
                     replace: ""
                 },
                 {
-                    // Fix sizes for mobile indicators which aren't online
                     match: /(?<=\(\i\.status,)(\i)(?=,\{.{0,15}isMobile:(\i))/,
                     replace: '$2?"online":$1'
                 },
                 {
-                    // Make isMobile true no matter the status
                     match: /(?<=\i&&!\i)&&\i===\i\.\i\.ONLINE/,
                     replace: ""
                 }
@@ -406,7 +388,6 @@ export default definePlugin({
             find: "}isMobileOnline(",
             predicate: () => settings.store.colorMobileIndicator,
             replacement: {
-                // Make isMobileOnline return true no matter what is the user status
                 match: /(?<=\i\[\i\.\i\.MOBILE\])===\i\.\i\.ONLINE/,
                 replace: "!= null"
             }

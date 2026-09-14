@@ -20,7 +20,6 @@ export interface Snapshot {
 
 type AuthMap = Record<string, string>;
 
-// keyed per account so switching accounts doesn't carry the token across
 export async function getToken(): Promise<string | undefined> {
     const id = UserStore.getCurrentUser()?.id;
     if (!id) return undefined;
@@ -75,7 +74,6 @@ export function deleteDistro(): Promise<{ ok: true; }> {
 }
 
 export async function fetchSnapshot(): Promise<Snapshot> {
-    // revalidate against the edge instead of trusting a stale local copy
     const res = await fetch(`${API_BASE}/snapshot.json`, { cache: "no-cache" });
     if (!res.ok) throw new Error(`snapshot fetch failed (${res.status})`);
     return res.json();

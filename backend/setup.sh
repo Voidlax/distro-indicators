@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
-# One-shot provisioning for the distro-indicators backend.
-#
-# Needs CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID in the environment.
-# Creates the D1 database and R2 bucket, writes the real database id into
-# wrangler.toml, applies migrations, and deploys. Safe to re-run.
+
 set -euo pipefail
 
 cd "$(dirname "$0")"
